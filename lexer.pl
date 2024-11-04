@@ -1,4 +1,4 @@
-% DCG grammar - Parser implementation
+% DCG grammar - Lexer implementation
 
 % Tokens are unique and atoms that literally match the keyword
 tokens(Z) --> "while", tokens(Y), {Z = [while | Y]}.
