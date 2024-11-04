@@ -24,11 +24,11 @@ statement([V, :=, BoolVal | Z], Z, [assign(name(V), BoolVal)]) :- atom(V), boolv
 
 % if expr
 statement([if | Z0], Z, [if(Expr, Then ,Else)]) :- compoundboolexpr(Z0, [then | Z1], Expr),
-                                                  statements(Z1, [else | Z2], Then),
-                                                  statements(Z2, [endif | Z], Else).
+                                                   statements(Z1, [else | Z2], Then),
+                                                   statements(Z2, [endif | Z], Else).
 % while expr
 statement([while | Z0], Z, [while(Expr, Do)]) :- compoundboolexpr(Z0, [do | Z1], Expr),
-                                                  statements(Z1, [endwhile | Z], Do).
+                                                 statements(Z1, [endwhile | Z], Do).
 
 % exit program out of whatever NumLevels nested loops
 statement([exit, '(', NumLevels, ')' | Z], Z, [exit(NumLevels)]).
