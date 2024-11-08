@@ -12,7 +12,7 @@ tokens(Z) --> "exit", tokens(Y), {Z = [exit | Y]}.
 
 % comp
 tokens(Z) --> "==", tokens(Y), {Z = [== | Y]}.
-tokens(Z) --> "<>", tokens(Y), {Z = [<> | Y]}.
+tokens(Z) --> "=/=", tokens(Y), {Z = [=/= | Y]}.
 
 % assignment
 tokens(Z) --> ":=", tokens(Y), {Z = [:= | Y]}.

@@ -62,7 +62,7 @@ digit(8).
 digit(9).
 
 comparisonop(==).
-comparisonop(<>).
+comparisonop(=/=).
 
 logicop(1, and).
 logicop(2, or).
