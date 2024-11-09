@@ -1,4 +1,8 @@
 while 7 == 7 do
     a := true;
-    b := false;
+    if 1 == 1 then
+        a := false;
+    else
+        exit(1);
+    endif
 endwhile

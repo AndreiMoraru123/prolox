@@ -16,7 +16,6 @@ compilestatement([S1 | S2], D, Code, EnclosingLoopEnds) :- compilestatement(S1, 
                                                            append(Code1, Code2, Code).
 compilestatement(assign(name(X), Value), D, [instr(loadc, V), instr(store, Addr)], _) :- lookup(X, D, Addr),
                                                                                          logic_num(Value, V).
-compilestatement(other, _, [instr(nop,0)], _).
 compilestatement(if(Test, Then, Else), D, Code, EnclosingLoopEnds) :-
                 compileboolexpr(Test, D, TrueLabel, FalseLabel, Testcode),
                 compilestatement(Then, D, Thencode, EnclosingLoopEnds),
