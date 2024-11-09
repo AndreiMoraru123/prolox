@@ -36,6 +36,8 @@ statement([while | Z0], Z, [while(Expr, Do)]) :- compoundboolexpr(Z0, [do | Z1],
 % exit program out of whatever NumLevels nested loops
 statement([exit, '(', NumLevels, ')' | Z], Z, [exit(NumLevels)]).
 
+statement([other|Z],Z,[other]).
+
 % 2 is the lowest precedence level
 compoundboolexpr(Z0, Z, X) :- boolsubexpr(2, Z0, Z, X).
 boolsubexpr(N, Z0, Z, X) :- N > 0, N1 is N-1, boolsubexpr(N1, Z0, Z1, X0), restboolexpr(N, Z1, Z, X0, X).
