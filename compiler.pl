@@ -8,9 +8,6 @@
 % and the labels of the statements immediately following the enclosing loops are listed
 % in EnclosingLoopEnds (from inner to outermost).
 
-:- consult('utils/export_instr_graph.pl').
-
-
 compilestatement([], _, [], _).
 compilestatement([S1 | S2], D, Code, EnclosingLoopEnds) :- compilestatement(S1, D, Code1, EnclosingLoopEnds),
                                                            compilestatement(S2, D, Code2, EnclosingLoopEnds),
@@ -66,5 +63,4 @@ compile(File) :- open(File, read, Stream),
                  phrase(tokens(Z0), Z1),
                  program(Z0, _, AST),
                  compilestatement(AST, _, RelocatableCode, []),
-                 maplist(writeln, RelocatableCode),
-                 export_instruction_graph('instructions.svg', RelocatableCode).
+                 maplist(writeln, RelocatableCode).
