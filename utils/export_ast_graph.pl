@@ -1,4 +1,4 @@
-% GraphViz utils
+% GraphViz utils for AST generation
 
 :- use_module(library(apply)).
 :- use_module(library(yall)).
