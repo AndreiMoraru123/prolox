@@ -8,6 +8,10 @@
 % Z = token stream after the programcomponent (remaining state)
 % X = AST list
 
+:- use_module(library(apply)).
+:- use_module(library(yall)).
+:- use_module(library(gv)).
+
 % the whole program is just a sequence of statements
 program(Z0, Z, X) :- statements(Z0, Z, X).
 
@@ -74,8 +78,9 @@ parse(File) :- open(File, read, Stream),
                write('File content: '), writeln(Content),
                phrase(tokens(Z0), Z1),
                write('Tokens: '), writeln(Z0),
-               program(Z0, _, X),
-               write('AST: '), write(X).
+               program(Z0, _, AST),
+               write('AST: '), write(AST),
+               export_svg('AST.svg', AST).
 
 read_file(Stream, Codes) :-
     read_file(Stream, [], Codes).
@@ -86,4 +91,42 @@ read_file(Stream, Acc, Codes) :-
     read_file(Stream, NewAcc, Codes).
 read_file(Stream, Codes, Codes) :-
     at_end_of_stream(Stream).
+
+
+export_svg(File, AST) :-
+    gv_export(File, {AST}/[Out]>>export_ast(Out, AST), [directed(true)]).
+
+% main export predicate with list handling
+export_ast(Out, AST) :-
+    (is_list(AST) ->
+        % handle lists by directly processing their elements
+        maplist(export_ast(Out), AST)
+    ; atomic(AST) ->
+        % handle atomic values (numbers, atoms)
+        format(atom(Label), '<~w>', [AST]),
+        dot_node(Out, AST, [label(Label)])
+    ; AST =.. [Op | Children] ->
+        % handle compound terms
+        format(atom(Label), '<~w>', [Op]),
+        dot_node(Out, AST, [label(Label)]),
+        maplist(export_ast_child(Out, AST), Children)
+    ).
+
+% modified child export to handle lists
+export_ast_child(Out, Parent, Child) :-
+    (is_list(Child) ->
+        % for list children, connect parent to each element
+        maplist(export_single_child(Out, Parent), Child)
+    ; % otherwise handle normally
+        dot_node(Out, Child),
+        dot_arc(Out, Parent, Child),
+        export_ast(Out, Child)
+    ).
+
+% helper predicate to handle single list elements
+export_single_child(Out, Parent, Element) :-
+    dot_node(Out, Element),
+    dot_arc(Out, Parent, Element),
+    export_ast(Out, Element).
+
 
