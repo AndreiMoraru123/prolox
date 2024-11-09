@@ -8,9 +8,8 @@
 % Z = token stream after the programcomponent (remaining state)
 % X = AST list
 
-:- use_module(library(apply)).
-:- use_module(library(yall)).
-:- use_module(library(gv)).
+:- consult('utils/read_file.pl').
+:- consult('utils/export_ast_graph.pl').
 
 % the whole program is just a sequence of statements
 program(Z0, Z, X) :- statements(Z0, Z, X).
@@ -81,54 +80,3 @@ parse(File) :- open(File, read, Stream),
                program(Z0, _, AST),
                write('AST: '), write(AST),
                export_svg('AST.svg', AST).
-
-% File reading is funny in SWI-Prolog
-read_file(Stream, Codes) :-
-    read_file(Stream, [], Codes).
-read_file(Stream, Acc, Codes) :-
-    \+ at_end_of_stream(Stream),
-    read_line_to_codes(Stream, LineCodes),
-    append(Acc, LineCodes, NewAcc),
-    read_file(Stream, NewAcc, Codes).
-read_file(Stream, Codes, Codes) :-
-    at_end_of_stream(Stream).
-
-
-% GraphViz utils
-export_svg(File, AST) :-
-    gv_export(File, {AST}/[Out]>>export_ast(Out, AST), [directed(true)]).
-
-% main export predicate with list handling
-export_ast(Out, AST) :-
-    (is_list(AST) ->
-        % handle lists by exporting each element
-        maplist(export_ast(Out), AST)
-    ; atomic(AST) ->
-        % handle atomic values (numbers, atoms)
-        format(atom(Label), '<~w>', [AST]),
-        dot_node(Out, AST, [label(Label)])
-    ; AST =.. [Op | Children] ->
-        % handle compound terms (split into operator and arguments)
-        format(atom(Label), '<~w>', [Op]),
-        dot_node(Out, AST, [label(Label)]),
-        maplist(export_children(Out, AST), Children)
-    ).
-
-% modified child export to handle lists
-export_children(Out, Parent, Child) :-
-    (is_list(Child) ->
-        % for list children, connect parent to each element
-        maplist(export_child(Out, Parent), Child)
-    ; % otherwise handle normally
-        dot_node(Out, Child),
-        dot_arc(Out, Parent, Child),
-        export_ast(Out, Child)
-    ).
-
-% base case - exporting a single child node
-export_child(Out, Parent, Element) :-
-    dot_node(Out, Element),
-    dot_arc(Out, Parent, Element),
-    export_ast(Out, Element).
-
-
