@@ -14,13 +14,21 @@
 % the whole program is just a sequence of statements
 program(Z0, Z, X) :- statements(Z0, Z, X).
 
-% X0 is passed down to reststatements and returned as a prefix of X
-statements(Z0, Z, X) :- statement(Z0, Z1, X0), reststatements(Z1, Z, X0, X).
+% base case - succeed on encountering explicit terminators
+statements(Z, Z, []) :-
+    (Z = [endwhile|_] ; Z = [endif|_] ; Z = [else|_] ; Z = []).
 
-% Here ; serves as a statement separator
-reststatements([';' | Z0], Z, X0, Y) :- statements(Z0, Z, X), append(X0, X, Y).
-reststatements(Z, Z, X, X). % base case, AST list remains unchanged
-
+% Handle statement lists avoiding double nesting (nested trees)
+statements(Z0, Z, Stmts) :-
+    \+ (Z0 = [endwhile|_] ; Z0 = [endif|_] ; Z0 = [else|_] ; Z0 = []),
+    statement(Z0, Z1, Stmt),
+    (   Z1 = [';'|Rest] % handle whether there is a semicolon or not
+    ->  statements(Rest, Z, RestStmts),
+        % if Stmt is already a list [X], extract X and put it in the result
+        (Stmt = [X] -> Stmts = [X | RestStmts] ; Stmts = [Stmt | RestStmts])
+    ;   statements(Z1, Z, RestStmts),
+        (Stmt = [X] -> Stmts = [X | RestStmts] ; Stmts = [Stmt | RestStmts])
+).
 
 % assignment to a boolean value (e.g. x := true)
 statement([V, :=, BoolVal | Z], Z, [assign(name(V), BoolVal)]) :- atom(V), boolval(BoolVal).
@@ -35,8 +43,6 @@ statement([while | Z0], Z, [while(Expr, Do)]) :- compoundboolexpr(Z0, [do | Z1],
 
 % exit program out of whatever NumLevels nested loops
 statement([exit, '(', NumLevels, ')' | Z], Z, [exit(NumLevels)]).
-
-statement([other|Z],Z,[other]).
 
 % 2 is the lowest precedence level
 compoundboolexpr(Z0, Z, X) :- boolsubexpr(2, Z0, Z, X).

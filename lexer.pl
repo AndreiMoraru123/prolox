@@ -16,7 +16,6 @@ tokens(Z) --> "=/=", tokens(Y), {Z = [=/= | Y]}.
 
 % assignment
 tokens(Z) --> ":=", tokens(Y), {Z = [:= | Y]}.
-tokens(Z) --> "other", tokens(Y), {Z = [other | Y]}.
 
 % booleans
 tokens(Z) --> "true", tokens(Y), {Z = [true | Y]}.

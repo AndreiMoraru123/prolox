@@ -1,21 +1,4 @@
-if 2==3 or 1=/=2 and 7=/=7
-then
-	while 2==7 or 5=/=6
-	do
-		r:=true;
-		s:=false;
-		if true
-		then
-			exit(1)
-		else
-			other ;
-			t:=true
-		endif ;
-		t:=false
-	endwhile ;
-	other
-else
-	other ;
-	u:=true
-endif ;
-v:=false
+while 7 == 7 do
+    a := true;
+    b := false;
+endwhile
