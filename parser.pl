@@ -82,6 +82,7 @@ parse(File) :- open(File, read, Stream),
                write('AST: '), write(AST),
                export_svg('AST.svg', AST).
 
+% File reading is funny in SWI-Prolog
 read_file(Stream, Codes) :-
     read_file(Stream, [], Codes).
 read_file(Stream, Acc, Codes) :-
@@ -93,38 +94,39 @@ read_file(Stream, Codes, Codes) :-
     at_end_of_stream(Stream).
 
 
+% GraphViz utils
 export_svg(File, AST) :-
     gv_export(File, {AST}/[Out]>>export_ast(Out, AST), [directed(true)]).
 
 % main export predicate with list handling
 export_ast(Out, AST) :-
     (is_list(AST) ->
-        % handle lists by directly processing their elements
+        % handle lists by exporting each element
         maplist(export_ast(Out), AST)
     ; atomic(AST) ->
         % handle atomic values (numbers, atoms)
         format(atom(Label), '<~w>', [AST]),
         dot_node(Out, AST, [label(Label)])
     ; AST =.. [Op | Children] ->
-        % handle compound terms
+        % handle compound terms (split into operator and arguments)
         format(atom(Label), '<~w>', [Op]),
         dot_node(Out, AST, [label(Label)]),
-        maplist(export_ast_child(Out, AST), Children)
+        maplist(export_children(Out, AST), Children)
     ).
 
 % modified child export to handle lists
-export_ast_child(Out, Parent, Child) :-
+export_children(Out, Parent, Child) :-
     (is_list(Child) ->
         % for list children, connect parent to each element
-        maplist(export_single_child(Out, Parent), Child)
+        maplist(export_child(Out, Parent), Child)
     ; % otherwise handle normally
         dot_node(Out, Child),
         dot_arc(Out, Parent, Child),
         export_ast(Out, Child)
     ).
 
-% helper predicate to handle single list elements
-export_single_child(Out, Parent, Element) :-
+% base case - exporting a single child node
+export_child(Out, Parent, Element) :-
     dot_node(Out, Element),
     dot_arc(Out, Parent, Element),
     export_ast(Out, Element).
