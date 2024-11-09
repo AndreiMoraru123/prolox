@@ -8,6 +8,8 @@
 % and the labels of the statements immediately following the enclosing loops are listed
 % in EnclosingLoopEnds (from inner to outermost).
 
+:- use_module(library(lists)).  % nth
+
 compilestatement([], _, [], _).
 compilestatement([S1 | S2], D, Code, EnclosingLoopEnds) :- compilestatement(S1, D, Code1, EnclosingLoopEnds),
                                                            compilestatement(S2, D, Code2, EnclosingLoopEnds),
@@ -23,11 +25,11 @@ compilestatement(if(Test, Then, Else), D, Code, EnclosingLoopEnds) :-
                 append(C1, [instr(jump, AfterIf), label(FalseLabel) | ElseCode], C2),
                 append(C2, [label(AfterIf)], Code).
 compilestatement(while(Test, Do), D, Code, EnclosingLoopEnds) :-
-                compilestatement(Test, D, TrueLabel, FalseLabel, Testcode),
-                compilestatement(Do, D, Docode, [FalseLabel, EnclosingLoopEnds]),
+                compileboolexpr(Test, D, TrueLabel, FalseLabel, Testcode),
+                compilestatement(Do, D, Docode, [FalseLabel | EnclosingLoopEnds]),
                 append([label(Loopstart) | Testcode], [label(TrueLabel) | Docode], C1),
                 append(C1, [instr(jump, Loopstart), label(FalseLabel)], Code).
-compilestatement(exit(K), _, [instr(jump, Label)], EnclosingLoopEnds) :- nth(K, EnclosingLoopEnds, Label).
+compilestatement(exit(K), _, [instr(jump, Label)], EnclosingLoopEnds) :- nth1(K, EnclosingLoopEnds, Label).
 
 compileboolexpr(logicexpr(Op, X1, X2), D, TrueLabel, FalseLabel, Code) :-
                 compileboolexpr(X1, D, TL, FL, Code1),
@@ -40,6 +42,9 @@ compileboolexpr(comparison(Op, X1, X2), _, TrueLabel, FalseLabel,
 compileboolexpr(name(BoolVar), D, TrueLabel, FalseLabel,
                 [instr(load, Addr), instr(jumpeq, FalseLabel), instr(jump, TrueLabel)]) :-
                 lookup(BoolVar, D, Addr).
+
+shortcircuit(and, _, FalseLabel, TL, FL, BeginArg2) :- FL = FalseLabel, TL = BeginArg2.
+shortcircuit(or, TrueLabel, _, TL, FL, BeginArg2) :- TL = TrueLabel, FL = BeginArg2.
 
 unlessop(==, jumpne).
 unlessop(=/=, jumpeq).
