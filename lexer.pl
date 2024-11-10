@@ -1,4 +1,5 @@
 % DCG grammar - Lexer implementation
+:- use_module(library(dcg/basics)). % for whitespace
 
 % Tokens are unique and atoms that literally match the keyword
 tokens(Z) --> "while", tokens(Y), {Z = [while | Y]}.
@@ -23,9 +24,7 @@ tokens(Z) --> "and", tokens(Y), {Z = [and | Y]}.
 tokens(Z) --> "or", tokens(Y), {Z = [or | Y]}.
 
 % ignore whitespace
-tokens(Z) --> " ", tokens(Y), {Z = Y}.
-tokens(Z) --> "\t", tokens(Y), {Z = Y}.
-tokens(Z) --> "\n", tokens(Y), {Z = Y}.
+tokens(Z) --> white, tokens(Z).
 
 % single characters get mapped to prolog atoms and appended
 tokens(Z) --> [C], tokens(Y), {name(X, [C]), Z = [X | Y]}.
