@@ -33,10 +33,13 @@ statements(Z0, Z, Stmts) :-
 % assignment to a boolean value (e.g. x = true)
 statement([V, =, BoolVal | Z], Z, [assign(name(V), BoolVal)]) :- atom(V), boolval(BoolVal).
 
-% if expr
+% if expr can have an else
 statement([if | Z0], Z, [if(Expr, Then ,Else)]) :- compoundboolexpr(Z0, [then | Z1], Expr),
                                                    statements(Z1, [else | Z2], Then),
                                                    statements(Z2, [end | Z], Else).
+% but does not need to have one
+statement([if | Z0], Z, [if(Expr, Then)]) :- compoundboolexpr(Z0, [then | Z1], Expr),
+                                             statements(Z1, [end | Z], Then).
 % while expr
 statement([while | Z0], Z, [while(Expr, Do)]) :- compoundboolexpr(Z0, [do | Z1], Expr),
                                                  statements(Z1, [end | Z], Do).

@@ -4,6 +4,5 @@ if 3 =/= 2 then
 else
     if 2 == 2 then
         v = false
-    else
     end
 end

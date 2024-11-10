@@ -17,6 +17,15 @@ compilestatement([S1 | S2], D, Code, EnclosingLoopEnds) :- compilestatement(S1, 
                                                            append(Code1, Code2, Code).
 compilestatement(assign(name(X), Value), D, [instr(loadc, V), instr(store, Addr)], _) :- lookup(X, D, Addr),
                                                                                          logic_num(Value, V).
+% compile if stmt without else branch
+compilestatement(if(Test, Then), D, Code, EnclosingLoopEnds) :-
+                compileboolexpr(Test, D, TrueLabel, FalseLabel, Testcode),
+                compilestatement(Then, D, Thencode, EnclosingLoopEnds),
+                append(Testcode, [label(TrueLabel) | Thencode], C1),
+                append(C1, [instr(jump, AfterIf), label(FalseLabel)], C2),
+                append(C2, [label(AfterIf)], Code).
+
+% compile if stmt with else branch
 compilestatement(if(Test, Then, Else), D, Code, EnclosingLoopEnds) :-
                 compileboolexpr(Test, D, TrueLabel, FalseLabel, Testcode),
                 compilestatement(Then, D, Thencode, EnclosingLoopEnds),
@@ -24,13 +33,18 @@ compilestatement(if(Test, Then, Else), D, Code, EnclosingLoopEnds) :-
                 append(Testcode, [label(TrueLabel) | Thencode], C1),
                 append(C1, [instr(jump, AfterIf), label(FalseLabel) | ElseCode], C2),
                 append(C2, [label(AfterIf)], Code).
+
+% compile while stmt
 compilestatement(while(Test, Do), D, Code, EnclosingLoopEnds) :-
                 compileboolexpr(Test, D, TrueLabel, FalseLabel, Testcode),
                 compilestatement(Do, D, Docode, [FalseLabel | EnclosingLoopEnds]),
                 append([label(Loopstart) | Testcode], [label(TrueLabel) | Docode], C1),
                 append(C1, [instr(jump, Loopstart), label(FalseLabel)], Code).
+
+% compile exit stmt
 compilestatement(exit(K), _, [instr(jump, Label)], EnclosingLoopEnds) :- nth1(K, EnclosingLoopEnds, Label).
 
+% compile bool expr
 compileboolexpr(logicexpr(Op, X1, X2), D, TrueLabel, FalseLabel, Code) :-
                 compileboolexpr(X1, D, TL, FL, Code1),
                 compileboolexpr(X2, D, TrueLabel, FalseLabel, Code2),
