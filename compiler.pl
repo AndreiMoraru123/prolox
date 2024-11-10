@@ -8,7 +8,8 @@
 % and the labels of the statements immediately following the enclosing loops are listed
 % in EnclosingLoopEnds (from inner to outermost).
 
-:- use_module(library(lists)).  % nth
+:- consult('utils/read_file.pl').
+:- use_module(library(lists)).  % for nth
 
 compilestatement([], _, [], _).
 compilestatement([S1 | S2], D, Code, EnclosingLoopEnds) :- compilestatement(S1, D, Code1, EnclosingLoopEnds),
@@ -52,7 +53,7 @@ unlessop(=/=, jumpeq).
 % i.e. the second parameter is used as the output during code generation
 %
 % The symbol table so built has uninstantiated variables
-% in place of adresses upon completion of codegen
+% in place of addresses upon completion of codegen
 lookup(Name, dic(Name, Value, _, _), Value) :- !.
 lookup(Name, dic(Name1, _, Before, _), Value) :- Name @< Name1, lookup(Name, Before, Value).
 lookup(Name, dic(Name1, _, _, After), Value) :- Name @> Name1, lookup(Name, After, Value).
