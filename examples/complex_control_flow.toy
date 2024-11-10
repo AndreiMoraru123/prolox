@@ -1,8 +1,8 @@
-if 3 =/= 2 then
+if 3 =/= 3 or 4 =/= 5 then
     v = true
     w = false
 else
-    if 2 == 2 then
+    if 6 == 6 then
         v = false
     end
 end
