@@ -2,7 +2,7 @@
 
 ### Sample code
 
-```
+```lua
 while 7 == 7 do
     a = true;
     if 1 == 1 then
