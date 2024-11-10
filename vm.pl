@@ -7,9 +7,6 @@
 % The first argument of assemble may be a list of instructions or a
 % single instruction. N0 means the current address, N means the address
 % where subsequent code should start.
-
-:- consult('utils/read_file.pl').
-
 assemble([Code1 | Code2], N0, N) :- assemble(Code1, N0, N1), assemble(Code2, N1, N).
 
 % For simplicity, each instruction is assumed to ocupy only one word worth of memory

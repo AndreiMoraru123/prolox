@@ -8,7 +8,6 @@
 % and the labels of the statements immediately following the enclosing loops are listed
 % in EnclosingLoopEnds (from inner to outermost).
 
-:- consult('utils/read_file.pl').
 :- use_module(library(lists)).  % for nth
 
 compilestatement([], _, [], _).
