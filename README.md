@@ -12,6 +12,11 @@ while 7 == 7 do
     end
 end
 ```
+> [!TIP]
+> Run the whole pipeline via loading all the modules:
+> ```sh
+> swipl lexer.pl parser.pl compiler.pl vm.pl
+> ```
 
 ### Parser AST generation
 
