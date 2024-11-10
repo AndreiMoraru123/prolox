@@ -30,8 +30,8 @@ statements(Z0, Z, Stmts) :-
         (Stmt = [X] -> Stmts = [X | RestStmts] ; Stmts = [Stmt | RestStmts])
 ).
 
-% assignment to a boolean value (e.g. x := true)
-statement([V, :=, BoolVal | Z], Z, [assign(name(V), BoolVal)]) :- atom(V), boolval(BoolVal).
+% assignment to a boolean value (e.g. x = true)
+statement([V, =, BoolVal | Z], Z, [assign(name(V), BoolVal)]) :- atom(V), boolval(BoolVal).
 
 % if expr
 statement([if | Z0], Z, [if(Expr, Then ,Else)]) :- compoundboolexpr(Z0, [then | Z1], Expr),

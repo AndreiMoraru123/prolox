@@ -1,9 +1,9 @@
 if 3 =/= 2 then
-    v := true
-    w := false
+    v = true
+    w = false
 else
     if 2 == 2 then
-        v := false
+        v = false
     else
     end
 end

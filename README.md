@@ -4,9 +4,9 @@
 
 ```
 while 7 == 7 do
-    a := true;
+    a = true;
     if 1 == 1 then
-        a := false;
+        a = false;
     else
         exit(1);
     end
