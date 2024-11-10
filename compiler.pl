@@ -46,10 +46,10 @@ compilestatement(exit(K), _, [instr(jump, Label)], EnclosingLoopEnds) :- nth1(K,
 
 % compile bool expr
 compileboolexpr(logicexpr(Op, X1, X2), D, TrueLabel, FalseLabel, Code) :-
-                compileboolexpr(X1, D, TL, FL, Code1),
+                compileboolexpr(X1, D, TrueDest, FalseDest, Code1),
                 compileboolexpr(X2, D, TrueLabel, FalseLabel, Code2),
-                shortcircuit(Op, TrueLabel, FalseLabel, TL, FL, BeginArg2),
-                append(Code1, [label(BeginArg2) | Code2], Code).
+                shortcircuit(Op, TrueLabel, FalseLabel, TrueDest, FalseDest, SecondExpr),
+                append(Code1, [label(SecondExpr) | Code2], Code).
 compileboolexpr(comparison(Op, X1, X2), _, TrueLabel, FalseLabel,
                 [instr(loadc, X1), instr(subc, X2), instr(JumpIf, FalseLabel), instr(jump, TrueLabel)]) :-
                 unlessop(Op, JumpIf).
@@ -57,8 +57,10 @@ compileboolexpr(name(BoolVar), D, TrueLabel, FalseLabel,
                 [instr(load, Addr), instr(jumpeq, FalseLabel), instr(jump, TrueLabel)]) :-
                 lookup(BoolVar, D, Addr).
 
-shortcircuit(and, _, FalseLabel, TL, FL, BeginArg2) :- FL = FalseLabel, TL = BeginArg2.
-shortcircuit(or, TrueLabel, _, TL, FL, BeginArg2) :- TL = TrueLabel, FL = BeginArg2.
+% if first expr is false, jump to the final false label (unify); if it's true, continue to second expr (unify)
+shortcircuit(and, _, FalseLabel, TrueDest, FalseDest, SecondExpr) :- FalseDest = FalseLabel, TrueDest = SecondExpr.
+% if first expr is true, jump to the final true label (unify); if it's false, continue to second expr (unify)
+shortcircuit(or, TrueLabel, _, TrueDest, FalseDest, SecondExpr) :- TrueDest = TrueLabel, FalseDest = SecondExpr.
 
 unlessop(==, jumpne).
 unlessop(=/=, jumpeq).
