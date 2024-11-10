@@ -15,11 +15,19 @@ endwhile
 
 ### Parser AST generation
 
+```pl
+?- parse('examples/while_loop.toy').
+```
+
 ![AST](https://github.com/user-attachments/assets/944aa41d-5afc-4c0e-ab0e-dcc05c96700b)
 
 ### Compiled Instruction Set
 
+```pl
+?- compile('examples/while_loop.toy').
 ```
+
+```antlr
 label(_53158)
 instr(loadc,7)
 instr(subc,7)
@@ -41,4 +49,30 @@ instr(jump,_52674)
 label(_52944)
 instr(jump,_53158)
 label(_52674)
+```
+
+### Assembled VM Code
+
+```pl
+?- run('examples/while_loop.toy').
+```
+
+```antlr
+1: loadc 7
+2: subc 7
+3: jumpne 16
+4: jump 5
+5: loadc 1
+6: store a
+7: loadc 1
+8: subc 1
+9: jumpne 14
+10: jump 11
+11: loadc 0
+12: store a
+13: jump 15
+14: jump 16
+15: jump 1
+16: halt 0
+17: Storage for a
 ```
