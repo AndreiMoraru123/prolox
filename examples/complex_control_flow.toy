@@ -5,5 +5,5 @@ else
     if 2 == 2 then
         v := false
     else
-    endif
-endif
+    end
+end

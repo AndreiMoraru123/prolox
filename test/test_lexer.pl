@@ -5,7 +5,7 @@
 
 test_keywords :-
     set_prolog_flag(double_quotes, codes),
-    string_codes("while a == b do ; endwhile", Codes),
+    string_codes("while a == b do ; end", Codes),
     phrase(tokens(Z), Codes),
     write('output: '), writeln(Z),
     writeln('').

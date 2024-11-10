@@ -16,11 +16,11 @@ program(Z0, Z, X) :- statements(Z0, Z, X).
 
 % base case - succeed on encountering explicit terminators
 statements(Z, Z, []) :-
-    (Z = [endwhile|_] ; Z = [endif|_] ; Z = [else|_] ; Z = []).
+    (Z = [end|_] ; Z = [else|_] ; Z = []).
 
 % Handle statement lists avoiding double nesting (nested trees)
 statements(Z0, Z, Stmts) :-
-    \+ (Z0 = [endwhile|_] ; Z0 = [endif|_] ; Z0 = [else|_] ; Z0 = []),
+    \+ (Z0 = [end|_] ; Z0 = [else|_] ; Z0 = []),
     statement(Z0, Z1, Stmt),
     (   Z1 = [';'|Rest] % handle whether there is a semicolon or not
     ->  statements(Rest, Z, RestStmts),
@@ -36,10 +36,10 @@ statement([V, :=, BoolVal | Z], Z, [assign(name(V), BoolVal)]) :- atom(V), boolv
 % if expr
 statement([if | Z0], Z, [if(Expr, Then ,Else)]) :- compoundboolexpr(Z0, [then | Z1], Expr),
                                                    statements(Z1, [else | Z2], Then),
-                                                   statements(Z2, [endif | Z], Else).
+                                                   statements(Z2, [end | Z], Else).
 % while expr
 statement([while | Z0], Z, [while(Expr, Do)]) :- compoundboolexpr(Z0, [do | Z1], Expr),
-                                                 statements(Z1, [endwhile | Z], Do).
+                                                 statements(Z1, [end | Z], Do).
 
 % exit program out of whatever NumLevels nested loops
 statement([exit, '(', NumLevels, ')' | Z], Z, [exit(NumLevels)]).

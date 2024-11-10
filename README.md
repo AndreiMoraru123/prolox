@@ -9,8 +9,8 @@ while 7 == 7 do
         a := false;
     else
         exit(1);
-    endif
-endwhile
+    end
+end
 ```
 
 ### Parser AST generation

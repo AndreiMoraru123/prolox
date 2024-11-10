@@ -3,11 +3,10 @@
 % Tokens are unique and atoms that literally match the keyword
 tokens(Z) --> "while", tokens(Y), {Z = [while | Y]}.
 tokens(Z) --> "do", tokens(Y), {Z = [do | Y]}.
-tokens(Z) --> "endwhile", tokens(Y), {Z = [endwhile | Y]}.
 tokens(Z) --> "if", tokens(Y), {Z = [if | Y]}.
 tokens(Z) --> "then", tokens(Y), {Z = [then | Y]}.
 tokens(Z) --> "else", tokens(Y), {Z = [else | Y]}.
-tokens(Z) --> "endif", tokens(Y), {Z = [endif | Y]}.
+tokens(Z) --> "end", tokens(Y), {Z = [end | Y]}.
 tokens(Z) --> "exit", tokens(Y), {Z = [exit | Y]}.
 
 % comp
