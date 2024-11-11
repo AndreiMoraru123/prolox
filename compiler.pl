@@ -14,6 +14,7 @@ compilestatement([], _, [], _).
 compilestatement([S1 | S2], D, Code, EnclosingLoopEnds) :- compilestatement(S1, D, Code1, EnclosingLoopEnds),
                                                            compilestatement(S2, D, Code2, EnclosingLoopEnds),
                                                            append(Code1, Code2, Code).
+% compile assignment
 compilestatement(assign(name(X), Value), D, [instr(loadc, V), instr(store, Addr)], _) :- lookup(X, D, Addr),
                                                                                          logic_num(Value, V).
 % compile if stmt without else branch
