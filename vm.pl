@@ -23,10 +23,10 @@ assemble([], N, N).
 % is allocated for them
 allocate(void, N, N) :- !.
 
-% N0 refers to the first storage address needed for the symbols in dic(*)
-% N refers to the first address after the storage needed for dic(*)
+% N0 refers to the first storage address needed for the symbols in dict(*)
+% N refers to the first address after the storage needed for dict(*)
 % N1 is the address alocated for the placeholder name (_)
-allocate(dic(_, N1, Before, After), N0, N) :- allocate(Before, N0, N1), N2 is N1 + 1, allocate(After, N2, N).
+allocate(dict(_, N1, Before, After), N0, N) :- allocate(Before, N0, N1), N2 is N1 + 1, allocate(After, N2, N).
 
 % link procedure modified to supress "instr" from output
 % works with list and looks up addresses
@@ -57,9 +57,9 @@ wdata(CurrentLine, LastLine, D) :- reverselookup(Name, D, CurrentLine),
 % reverselookup is used to determin the symbolic name of a given address
 % The dictionary is ordered by name, not by address, so this is slow
 reverselookup(_, void, _) :- !, fail.
-reverselookup(Name, dic(Name, Line, _, _), Line) :- !.
-reverselookup(Name, dic(_, _, Before, _), Line) :- reverselookup(Name, Before, Line).
-reverselookup(Name, dic(_, _, _, After), Line) :- reverselookup(Name, After, Line).
+reverselookup(Name, dict(Name, Line, _, _), Line) :- !.
+reverselookup(Name, dict(_, _, Before, _), Line) :- reverselookup(Name, Before, Line).
+reverselookup(Name, dict(_, _, _, After), Line) :- reverselookup(Name, After, Line).
 
 directaddressing(load).
 directaddressing(store).

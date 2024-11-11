@@ -67,11 +67,13 @@ unlessop(=/=, jumpeq).
 % lookup is used to "build" the symbol table during codegen,
 % i.e. the second parameter is used as the output during code generation
 %
-% The symbol table so built has uninstantiated variables
-% in place of addresses upon completion of codegen
-lookup(Name, dic(Name, Value, _, _), Value) :- !.
-lookup(Name, dic(Name1, _, Before, _), Value) :- Name @< Name1, lookup(Name, Before, Value).
-lookup(Name, dic(Name1, _, _, After), Value) :- Name @> Name1, lookup(Name, After, Value).
+% The dict here is as BST implementation:
+%   1. if the current node's name matches what we're looking for, we return its Value
+%   2. if our target Name is less than the current Name1, recurse into the left subtree
+%   3. if out target Name is grater than the current Name1, recurse into the right subtree
+lookup(Name, dict(Name, Value, _, _), Value) :- !.
+lookup(Name, dict(Name1, _, Before, _), Value) :- Name @< Name1, lookup(Name, Before, Value).
+lookup(Name, dict(Name1, _, _, After), Value) :- Name @> Name1, lookup(Name, After, Value).
 
 % convention for representing Boolean values numerically
 logic_num(true, 1).
