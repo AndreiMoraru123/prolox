@@ -18,7 +18,7 @@ program(Z0, Z, X) :- statements(Z0, Z, X).
 statements(Z, Z, []) :-
     (Z = [end|_] ; Z = [else|_] ; Z = []).
 
-% Handle statement lists avoiding double nesting (nested trees)
+% handle statement lists avoiding double nesting (nested trees)
 statements(Z0, Z, Stmts) :-
     \+ (Z0 = [end|_] ; Z0 = [else|_] ; Z0 = []),
     statement(Z0, Z1, Stmt),

@@ -1,6 +1,6 @@
 % The first aguments of compilestatement may be a list of ASTs or a single AST.
-% The first two entry points correcpond to the former possibility.
-% The remaining entry points correcpond to the latter case.
+% The first two entry points correspond to the former possibility.
+% The remaining entry points correspond to the latter case.
 %
 % In the latter case, `compilestatement(S, D, Code, EnclosingLoopEnds) :- subgoals.`,
 % means that if the subgoals are satisfied, then S is a Prolog term encapsulating an AST
