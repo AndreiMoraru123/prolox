@@ -14,13 +14,13 @@ assemble(instr(_,_), N0, N) :- N is N0 + 1.
 
 % When a label is encountered, the previously uninstantiated variable contained in
 % the label is unified with the current address in the assembled code.
-% The label itself does not occupy scpae in the final code, so the current address
+% The label itself does not occupy space in the final code, so the current address
 % marker is not advanced.
 assemble(label(N), N, N).
 assemble([], N, N).
 
-% uninstantiated variables (leaves of the dictionary) are set void, i.e. no memory
-% is allocated for them
+% uninstantiated variables (leaves of the dictionary)
+% are set void, i.e. no memory is allocated for them
 allocate(void, N, N) :- !.
 
 % N0 refers to the first storage address needed for the symbols in dict(*)
@@ -28,9 +28,7 @@ allocate(void, N, N) :- !.
 % N1 is the address alocated for the placeholder name (_)
 allocate(dict(_, N1, Before, After), N0, N) :- allocate(Before, N0, N1), N2 is N1 + 1, allocate(After, N2, N).
 
-% link procedure modified to supress "instr" from output
-% works with list and looks up addresses
-% corresponding to names
+% link procedure modified to supress "instr" from output, works with list and looks up addresses corresponding to names
 link([], Inline, Outline, _) :- Outline is Inline, !.
 link([Next | Rest], Inline, Outline, D) :- link(Next, Inline, Out_line, D) , link(Rest, Out_line, Outline, D), !.
 link(instr(I, Op), Inline, Outline, D) :- directaddressing(I),
